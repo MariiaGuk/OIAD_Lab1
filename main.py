@@ -1,11 +1,3 @@
-"""Лабораторна робота № 1. Модель інформаційного впливу (варіант 3).
-
-Завдання 1: вплив одного каналу (k = 0.6).
-Завдання 2: одночасний вплив двох каналів.
-Завдання 3: від'ємне k (k = -0.3) та поверхня N(t, k) при зміні емоційної складової.
-
-Результат: таблиці значень у консолі та графіки fig1.png ... fig4.png.
-"""
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -27,7 +19,7 @@ t = np.linspace(0.5, T_MAX, 600)
 T_ROWS = (10, 20, 30, 40, 50, 60, 80, 100)   # рядки таблиць у звіті
 
 
-# Моделі
+# Формули
 def n_one(t, k):
     """Один канал, вираз (2): N(t) = e^(-tau/t) · N0 · k."""
     return np.exp(-TAU / t) * N0 * k
@@ -48,6 +40,11 @@ def n_inf_one(k):
 def n_inf_two():
     """Два канали: N(∞) = Nп + N0·(1 - (1 - k)^2)."""
     return NP + N0 * (1 - (1 - K2) ** 2)
+
+
+def p_exp(t, tau):
+    """Імовірність потрапити під вплив: p(t) = e^(-tau/t)."""
+    return np.exp(-tau / t)
 
 
 # Точки біфуркації: N(t*) = 0.4·N0
@@ -89,7 +86,7 @@ ts1 = t_star_one(K1)
 inf1 = n_inf_one(K1)
 print("\nЗавдання 1 (один канал, k = 0.6)")
 for h in T_ROWS:
-    print(f"  t = {h:3d}: N = {n_one(h, K1):7.0f},  N/N0 = {n_one(h, K1) / N0:.3f}")
+    print(f"  t = {h:3d}: p = e^(-{TAU}/t) = {p_exp(h, TAU):.4f},  N = {n_one(h, K1):7.0f},  N/N0 = {n_one(h, K1) / N0:.3f}")
 print(f"  Межа при t -> ∞: N = {inf1:.0f} осіб,  N/N0 = {inf1 / N0:.2f}")
 print(f"  Точка біфуркації: t* = {ts1:.1f} год")
 
@@ -106,7 +103,7 @@ ts2 = t_star_two()
 inf2 = n_inf_two()  # межа N(t) при t -> ∞ (p -> 1)
 print("\nЗавдання 2 (два канали)")
 for h in T_ROWS:
-    print(f"  t = {h:3d}: N = {n_two(h):7.0f},  N/N0 = {n_two(h) / N0:.3f}")
+    print(f"  t = {h:3d}: p = e^(-{TAU2}/t) = {p_exp(h, TAU2):.4f},  N = {n_two(h):7.0f},  N/N0 = {n_two(h) / N0:.3f}")
 print(f"  Межа при t -> ∞: N = {inf2:.0f} осіб,  N/N0 = {inf2 / N0:.2f}")
 print(f"  Точка біфуркації: t* = {ts2:.1f} год (у завданні 1 – {ts1:.1f} год)")
 
@@ -123,7 +120,7 @@ finish(fig, ax, "fig2.png", "lower right")
 inf3 = n_inf_one(K3)
 print("\nЗавдання 3 (k = -0.3)")
 for h in T_ROWS:
-    print(f"  t = {h:3d}: N = {n_one(h, K3):7.0f},  N/N0 = {n_one(h, K3) / N0:.3f}")
+    print(f"  t = {h:3d}: p = e^(-{TAU}/t) = {p_exp(h, TAU):.4f},  N = {n_one(h, K3):7.0f},  N/N0 = {n_one(h, K3) / N0:.3f}")
 print(f"  Межа при t -> ∞: N = {inf3:.0f} осіб,  N/N0 = {inf3 / N0:.2f}")
 print("  Точка біфуркації: не досягається (N(t) < 0 при всіх t)")
 
@@ -139,6 +136,8 @@ finish(fig, ax, "fig3.png", "upper right")
 
 # Завдання 3 (продовження): поверхня N(t, k), k від -0.2 до 0.3
 print("\nN(t, k), осіб")
+print(f"  N(t, k) = N0·k·p(t), p(t) = e^(-{TAU}/t)")
+print(f"  p(t):  t=20: {p_exp(20, TAU):.4f}   t=50: {p_exp(50, TAU):.4f}   t=100: {p_exp(100, TAU):.4f}   t->∞: 1")
 print("      k   t=20  t=50  t=100  t->∞")
 for k in (-0.2, -0.1, 0.0, 0.1, 0.2, 0.3):
     print(f"  {k:+.1f}  {n_one(20, k):5.0f} {n_one(50, k):5.0f} {n_one(100, k):6.0f} {n_inf_one(k):6.0f}")
